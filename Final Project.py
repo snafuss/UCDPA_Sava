@@ -30,7 +30,7 @@ total_vac_per_country = total_vac_per_country.sort_values(by='people_fully_vacci
 #print(total_vac_per_country[["country", "people_fully_vaccinated"]])
 
 #merge vaccine.csv with first two columns of popdf.csv
-vacc_tot_pop = pd.merge(total_vac_per_country, popdf.loc[["country","population"]], on='country')
+vacc_tot_pop = pd.merge(total_vac_per_country, popdf[["country","population"]], on='country')
 
 # filter for countries where number of vaccinations is more than 200000
 vaccine_gt_200k = total_vac_per_country[total_vac_per_country.people_fully_vaccinated > 200000][
@@ -42,8 +42,8 @@ for index, row in vaccine_gt_200k.iterrows():
 
 
 # sort largest to smallest value (popdf)
-popdf = popdf.sort_values(by='Population', ascending=False)
-print(popdf[["Country","Population"]])
+vacc_tot_pop = vacc_tot_pop.sort_values(by='population', ascending=False)
+print(vacc_tot_pop[["country","population","people_fully_vaccinated"]])
 
 # daily vacs per 1mil country pop
 #vaccinesdf["daily_vaccinations_per_million"] = 1000000 * vaccinesdf[["people_fully_vaccinated"]"] / homelessness["state_pop"]

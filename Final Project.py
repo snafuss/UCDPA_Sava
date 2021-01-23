@@ -41,8 +41,8 @@ for index, row in vaccine_gt_200k.iterrows():
     print(str(row[1]) + " people have been fully vaccinated in " + row[0])
 
 
-# sort largest to smallest value (popdf)
-vacc_tot_pop = vacc_tot_pop.sort_values(by='population', ascending=False)
+# sort new df ppl fully vacc and total population/country
+vacc_tot_pop = vacc_tot_pop.sort_values(by='people_fully_vaccinated', ascending=False)
 print(vacc_tot_pop[["country","population","people_fully_vaccinated"]])
 
 # daily vacs per 1mil country pop

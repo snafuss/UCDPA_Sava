@@ -58,14 +58,22 @@ vacc_tot_pop['percent_vaccinated'] = percent_list
 
 print(vacc_tot_pop)
 
+#Numpy array
+dataarray = np.genfromtxt(file2, delimiter=',', names=True, dtype=None, encoding= None, skip_header=0)
+print(np.shape(dataarray))
+print(dataarray['population'].mean())
+
 
 
 
 #Visualisation
-#sns.set_theme()
-#show = sns.load_dataset(vacc_tot_pop)
-#sns.countplot(x="country", y="vaccines")
-#plt.show()
+plotting = sns.displot(vacc_tot_pop.sort_values(by='percent_vaccinated', ascending=False), x="country", y="percent_vaccinated")
+plt.xlabel("Countries")
+plt.ylabel("Percent of vaccinated population")
+plt.title("COVID-19 Global Vaccination Rate")
+plt.xticks(rotation=90)
+plt.show()
+
 
 # daily vacs per 1mil country pop
 #vaccinesdf["daily_vaccinations_per_million"] = 1000000 * vaccinesdf[["people_fully_vaccinated"]"] / homelessness["state_pop"]

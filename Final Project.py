@@ -1,8 +1,10 @@
 # importing the Kaggle API
 # pip install kaggle
-import os
 import pandas as pd
 import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+
 
 file = "country_vaccinations.csv"
 vaccinesdf = pd.read_csv(file)
@@ -29,9 +31,9 @@ total_vac_per_country = vaccinesdf.loc[vaccinesdf.groupby('country').date.idxmax
 total_vac_per_country = total_vac_per_country.sort_values(by='people_fully_vaccinated', ascending=False)
 #print(total_vac_per_country[["country", "people_fully_vaccinated"]])
 
-#merge vaccine.csv with first two columns of popdf.csv
+#merge vaccinedf with first two columns of popdf
 vacc_tot_pop = pd.merge(total_vac_per_country, popdf[["country","population"]], on='country')
-
+print(vacc_tot_pop)
 # filter for countries where number of vaccinations is more than 200000
 vaccine_gt_200k = total_vac_per_country[total_vac_per_country.people_fully_vaccinated > 200000][
     ["country", "people_fully_vaccinated"]]
@@ -45,6 +47,26 @@ for index, row in vaccine_gt_200k.iterrows():
 vacc_tot_pop = vacc_tot_pop.sort_values(by='people_fully_vaccinated', ascending=False)
 print(vacc_tot_pop[["country","population","people_fully_vaccinated"]])
 
+# List for ordered sets of objects accessable via position.
+percent_list =[]
+for index, row in vacc_tot_pop.iterrows():
+    percent_list.append(row.people_fully_vaccinated / row.population * 100)
+vacc_tot_pop['percent_vaccinated'] = percent_list
+
+# could be done using the following code as well.
+# vacc_tot_pop['percent_vaccinated'] = vacc_tot_pop['people_fully_vaccinated'] / vacc_tot_pop['population'] * 100
+
+print(vacc_tot_pop)
+
+
+
+
+#Visualisation
+#sns.set_theme()
+#show = sns.load_dataset(vacc_tot_pop)
+#sns.countplot(x="country", y="vaccines")
+#plt.show()
+
 # daily vacs per 1mil country pop
 #vaccinesdf["daily_vaccinations_per_million"] = 1000000 * vaccinesdf[["people_fully_vaccinated"]"] / homelessness["state_pop"]
 
@@ -57,3 +79,6 @@ print(vacc_tot_pop[["country","population","people_fully_vaccinated"]])
 # From high_homelessness_srt, select the state and indiv_per_10k cols
 #result = high_homelessness_srt[["state", "indiv_per_10k"]]
 #print(result)
+
+
+

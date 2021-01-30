@@ -5,24 +5,31 @@ import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 
+def import_format_csv(filename):
+    imported_csv = pd.read_csv(filename)
+    imported_csv.columns = [header.lower() for header in imported_csv.columns]
+    return imported_csv
 
 file = "country_vaccinations.csv"
-vaccinesdf = pd.read_csv(file)
-#print(vaccinesdf.info())
+vaccinesdf = import_format_csv(file)
+#print(vaccinesdf.head())
 #print(vaccinesdf.shape)
 #print(vaccinesdf)
 
 file2 = "population_by_country_2020.csv"
-popdf = pd.read_csv(file2)
-#print(popdf)
+popdf = import_format_csv(file2)
+#print(popdf.head())
+#renaming columns to make homogenous.
+popdf.rename(columns={'country (or dependency)':'country', 'population (2020)':'population'}, inplace=True)
 
-# sort country by ppl_fully_vacs. replace missing values w/ 0
-vaccinesdf[["people_fully_vaccinated"]] = vaccinesdf[["people_fully_vaccinated"]].fillna(0)
+
+# identified the NAN values and drop when no data is present for people_fully_vaccinated
+vaccinesdf[["people_fully_vaccinated"]] = vaccinesdf[["people_fully_vaccinated"]].dropna()
 #print(vaccinesdf[["people_fully_vaccinated"]])
 
 # set d type of column "date" as initially "object"
 vaccinesdf[["date"]] = vaccinesdf[["date"]].apply(pd.to_datetime)
-# print(vaccinesdf.dtypes)
+#print(vaccinesdf.dtypes)
 
 # group by&loc
 total_vac_per_country = vaccinesdf.loc[vaccinesdf.groupby('country').date.idxmax()]
@@ -31,40 +38,38 @@ total_vac_per_country = vaccinesdf.loc[vaccinesdf.groupby('country').date.idxmax
 total_vac_per_country = total_vac_per_country.sort_values(by='people_fully_vaccinated', ascending=False)
 #print(total_vac_per_country[["country", "people_fully_vaccinated"]])
 
-#merge vaccinedf with first two columns of popdf
-vacc_tot_pop = pd.merge(total_vac_per_country, popdf[["country","population"]], on='country')
-print(vacc_tot_pop)
-# filter for countries where number of vaccinations is more than 200000
-vaccine_gt_200k = total_vac_per_country[total_vac_per_country.people_fully_vaccinated > 200000][
+# filter for countries where number of vaccinations is more than 1mil
+vaccine_gt_1m = total_vac_per_country[total_vac_per_country.people_fully_vaccinated > 1000000][
     ["country", "people_fully_vaccinated"]]
 
 # iterate over rows with iterrows()
-for index, row in vaccine_gt_200k.iterrows():
+for index, row in vaccine_gt_1m.iterrows():
     print(str(row[1]) + " people have been fully vaccinated in " + row[0])
 
+#merge vaccinedf with first two columns of popdf
+#print(popdf.columns)
+vacc_tot_pop = pd.merge(total_vac_per_country, popdf[["country","population"]], on='country')
+print(vacc_tot_pop)
 
 # sort new df ppl fully vacc and total population/country
 vacc_tot_pop = vacc_tot_pop.sort_values(by='people_fully_vaccinated', ascending=False)
 print(vacc_tot_pop[["country","population","people_fully_vaccinated"]])
 
-# List for ordered sets of objects accessable via position.
+# List for ordered sets of objects accessable via position + indexing
 percent_list =[]
 for index, row in vacc_tot_pop.iterrows():
     percent_list.append(row.people_fully_vaccinated / row.population * 100)
 vacc_tot_pop['percent_vaccinated'] = percent_list
 
 # could be done using the following code as well.
-# vacc_tot_pop['percent_vaccinated'] = vacc_tot_pop['people_fully_vaccinated'] / vacc_tot_pop['population'] * 100
-
+vacc_tot_pop['percent_vaccinated'] = vacc_tot_pop['people_fully_vaccinated'] / vacc_tot_pop['population'] * 100
 print(vacc_tot_pop)
 
-#Numpy array
+#Numpy array - print to see header, different names to previous
 dataarray = np.genfromtxt(file2, delimiter=',', names=True, dtype=None, encoding= None, skip_header=0)
+print(dataarray.dtype.names)
 print(np.shape(dataarray))
-print(dataarray['population'].mean())
-
-
-
+print(dataarray['Population_2020'].mean())
 
 #Visualisation
 plotting = sns.displot(vacc_tot_pop.sort_values(by='percent_vaccinated', ascending=False), x="country", y="percent_vaccinated")

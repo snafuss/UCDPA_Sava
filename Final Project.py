@@ -45,7 +45,8 @@ for index, row in vaccine_gt_1m.iterrows():
 #merge vaccinedf with first two columns of popdf
 #print(popdf.columns)
 vacc_tot_pop = pd.merge(total_vacc_per_country, popdf[["country","population"]], on='country')
-#print(vacc_tot_pop)
+#  print(vacc_tot_pop)
+
 
 # sort new df ppl fully vacc and total population/country
 vacc_tot_pop = vacc_tot_pop.sort_values(by='people_fully_vaccinated', ascending=False)
@@ -59,7 +60,7 @@ for index, row in vacc_tot_pop.iterrows():
     percent = row.people_fully_vaccinated / row.population * 100
     percent_list.append(percent)
 vacc_tot_pop['percent_vaccinated'] = percent_list
-print(vacc_tot_pop)
+print(vacc_tot_pop[["country","population","percent_vaccinated"]])
 # percentage can be calculated using the following code as well.
 vacc_tot_pop['percent_vaccinated'] = vacc_tot_pop['people_fully_vaccinated'] / vacc_tot_pop['population'] * 100
 #print(vacc_tot_pop)
@@ -70,7 +71,7 @@ vacc_tot_pop = vacc_tot_pop.dropna(subset=["people_fully_vaccinated"])
 #Numpy array - print to see header, different names to previous
 dataarray = np.genfromtxt(file2, delimiter=',', names=True, dtype=None, encoding= None, skip_header=0)
 print(dataarray.dtype.names)
-print(dataarray['Population_2020'].mean())
+print("The mean world population: " + str(int(dataarray['Population_2020'].mean())))
 
 #Visualisation
 plotting_percent = sns.displot(vacc_tot_pop.sort_values(by='percent_vaccinated', ascending=False), x="country", y="percent_vaccinated")

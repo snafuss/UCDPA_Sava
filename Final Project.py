@@ -45,7 +45,8 @@ for index, row in vaccine_gt_1m.iterrows():
 #merge vaccinedf with first two columns of popdf
 #print(popdf.columns)
 vacc_tot_pop = pd.merge(total_vacc_per_country, popdf[["country","population"]], on='country')
-#print(vacc_tot_pop)
+#  print(vacc_tot_pop)
+
 
 # sort new df ppl fully vacc and total population/country
 vacc_tot_pop = vacc_tot_pop.sort_values(by='people_fully_vaccinated', ascending=False)

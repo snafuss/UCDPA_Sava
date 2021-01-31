@@ -29,14 +29,14 @@ vaccinesdf[["people_fully_vaccinated"]] = vaccinesdf[["people_fully_vaccinated"]
 vaccinesdf[["date"]] = vaccinesdf[["date"]].apply(pd.to_datetime)
 #print(vaccinesdf.dtypes)
 # group by&loc
-total_vac_per_country = vaccinesdf.loc[vaccinesdf.groupby('country').date.idxmax()]
+total_vacc_per_country = vaccinesdf.loc[vaccinesdf.groupby('country').date.idxmax()]
 # sort largest to smallest value
-total_vac_per_country = total_vac_per_country.sort_values(by='people_fully_vaccinated', ascending=False)
-#print(total_vac_per_country[["country", "people_fully_vaccinated"]])
+total_vacc_per_country = total_vacc_per_country.sort_values(by='people_fully_vaccinated', ascending=False)
+#print(total_vacc_per_country[["country", "people_fully_vaccinated"]])
 
 
 # filter for countries where number of vaccinations is more than 1mil
-vaccine_gt_1m = total_vac_per_country[total_vac_per_country.people_fully_vaccinated > 1000000][
+vaccine_gt_1m = total_vacc_per_country[total_vacc_per_country.people_fully_vaccinated > 1000000][
     ["country", "people_fully_vaccinated"]]
 # iterate over rows with iterrows()
 for index, row in vaccine_gt_1m.iterrows():
@@ -44,7 +44,7 @@ for index, row in vaccine_gt_1m.iterrows():
 
 #merge vaccinedf with first two columns of popdf
 #print(popdf.columns)
-vacc_tot_pop = pd.merge(total_vac_per_country, popdf[["country","population"]], on='country')
+vacc_tot_pop = pd.merge(total_vacc_per_country, popdf[["country","population"]], on='country')
 #print(vacc_tot_pop)
 
 # sort new df ppl fully vacc and total population/country
@@ -54,7 +54,7 @@ print(vacc_tot_pop[["country","population","people_fully_vaccinated"]])
 # making a list and itterating through every row in vacc_tot_pop df and for each row calcuoate % and append percent_list
 #.append takes values from inside the for loop and appends at end of list.
 #after the for loop, percent_list is added as an extra column to vacc_tot_pop
-percent_list =[]
+percent_list = list()
 for index, row in vacc_tot_pop.iterrows():
     percent = row.people_fully_vaccinated / row.population * 100
     percent_list.append(percent)
@@ -64,10 +64,12 @@ print(vacc_tot_pop)
 vacc_tot_pop['percent_vaccinated'] = vacc_tot_pop['people_fully_vaccinated'] / vacc_tot_pop['population'] * 100
 #print(vacc_tot_pop)
 
+#new .dropna function set for the merged vacc_tot_pop df.
+vacc_tot_pop = vacc_tot_pop.dropna(subset=["people_fully_vaccinated"])
+
 #Numpy array - print to see header, different names to previous
 dataarray = np.genfromtxt(file2, delimiter=',', names=True, dtype=None, encoding= None, skip_header=0)
 print(dataarray.dtype.names)
-print(np.shape(dataarray))
 print(dataarray['Population_2020'].mean())
 
 #Visualisation
@@ -75,6 +77,14 @@ plotting = sns.displot(vacc_tot_pop.sort_values(by='percent_vaccinated', ascendi
 plt.xlabel("Countries")
 plt.ylabel("Percent of vaccinated population")
 plt.title("COVID-19 Global Vaccination Rate")
+plt.xticks(rotation=90)
+plt.show()
+
+g = sns.lineplot(x="country", y="people_fully_vaccinated", data=vacc_tot_pop.sort_values(by='people_fully_vaccinated', ascending=False))
+plt.xlabel("Countries")
+plt.ylabel("People fully vaccinated")
+plt.title("COVID-19 Global Vaccination Rate")
+#g.set_yscale("log")
 plt.xticks(rotation=90)
 plt.show()
 

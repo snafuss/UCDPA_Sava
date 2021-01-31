@@ -73,21 +73,19 @@ print(dataarray.dtype.names)
 print(dataarray['Population_2020'].mean())
 
 #Visualisation
-plotting = sns.displot(vacc_tot_pop.sort_values(by='percent_vaccinated', ascending=False), x="country", y="percent_vaccinated")
+plotting_percent = sns.displot(vacc_tot_pop.sort_values(by='percent_vaccinated', ascending=False), x="country", y="percent_vaccinated")
 plt.xlabel("Countries")
 plt.ylabel("Percent of vaccinated population")
 plt.title("COVID-19 Global Vaccination Rate")
 plt.xticks(rotation=90)
 plt.show()
 
-g = sns.lineplot(x="country", y="people_fully_vaccinated", data=vacc_tot_pop.sort_values(by='people_fully_vaccinated', ascending=False))
+plotting_all_ppl = sns.lineplot(x="country", y="people_fully_vaccinated", data=vacc_tot_pop.sort_values(by='people_fully_vaccinated', ascending=False))
 plt.xlabel("Countries")
 plt.ylabel("People fully vaccinated")
 plt.title("COVID-19 Global Vaccination Rate")
-#g.set_yscale("log")
 plt.xticks(rotation=90)
 plt.show()
-
 
 
 
